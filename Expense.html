@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Expense Tracker</title>
+    </head>
+    <body>
+        <form  onsubmit="saveToLocalStorage(event)">
+            <label> choose Expenseamount</label>
+            <input id='expense' type="number" name="Expenseamount"  required/>
+            <label> choose description</label>
+            <input id='description' type="text" name="description"  required/>
+            <label>choose catagory</label>
+           <select id="catagory" name="catagory">
+            <option value="Fuel">Fuel</option>
+            <option value="Bills">Bills</option>
+            <option value="Movies">Movies</option>
+            <option value="Shopping">Shopping</option>
+           </select>
+            <button> Add Expense </button>
+        </form>
+        
+        <ul id='listOfUsers'></ul>
+        <script>
+            function saveToLocalStorage(event)  {
+                event.preventDefault();
+                const Expenseamount = event.target.Expenseamount.value;
+                const description = event.target.description.value;
+                const catagory = event.target.catagory.value;
+                
+                const obj = {
+                    Expenseamount,
+                    description,
+                    catagory
+                } 
+                localStorage.setItem(obj.description, JSON.stringify(obj))
+                showNewUserOnScreen(obj)
+               }
+
+            window.addEventListener("DOMContentLoaded", () => {
+                const localStorageObj = localStorage;
+                const localstoragekeys  = Object.keys(localStorageObj)
+
+                for(var i =0; i< localstoragekeys.length; i++){
+                    const key = localstoragekeys[i]
+                    const userDetails= localStorageObj[key];
+                    const userDetailsObj = JSON.parse(userDetails);
+                    showNewUserOnScreen(userDetailsObj)
+                }
+            })
+
+            function showNewUserOnScreen(user){
+                document.getElementById('expense').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('catagory').value ='';
+                // console.log(localStorage.getItem(user.emailId))
+                if(localStorage.getItem(user.Expenseamount) !== null){
+                    removeUserFromScreen(user.Expenseamount)
+                }
+
+                const parentNode = document.getElementById('listOfUsers');
+                const childHTML = `<li id=${user.description}> ${user.Expenseamount} : ${user.description}:${user.catagory}
+                                        <button onclick=deleteExpense('${user.description}')> Delete Expense</button>
+                                        <button onclick=editUser('${user.Expenseamount}','${user.description}','${user.catagory}')>Edit Expense </button>
+                                     </li>`
+
+                parentNode.innerHTML = parentNode.innerHTML + childHTML;
+            }
+
+            
+
+            function editUser(Expenseamount, description,catagory){
+
+                document.getElementById('expense').value = Expenseamount;
+                document.getElementById('description').value = description;
+                document.getElementById('catagory').value = catagory;
+
+                deleteExpense(description);
+             }
+
+            
+
+            function deleteExpense(description){
+                console.log(description)
+                localStorage.removeItem(description);
+                removeUserFromScreen(description);
+
+            }
+
+            function removeUserFromScreen(description){
+                const parentNode = document.getElementById('listOfUsers');
+                const childNodeToBeDeleted = document.getElementById(description);
+                if(childNodeToBeDeleted) {
+                    parentNode.removeChild(childNodeToBeDeleted)
+                }
+            }
+
+
+
+
+
+
+
+        </script>
+
+
+        </body>
+        </html>
